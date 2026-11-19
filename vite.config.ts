@@ -9,7 +9,7 @@ export default defineConfig({
   define: {
     // Compile-time constant, makes it so that the version shows in the UI
     // without importing package.json into the browsers bundle.
-    __APP_VERSION__: JSON.stringify(pkg),
+    __APP_VERSION__: JSON.stringify(pkg.version),
   },
   resolve: {
     alias: {
