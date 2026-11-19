@@ -3,6 +3,13 @@
 All notable changes to Sailfish are documented here.
 The format follows Keep a Changelog, and the project uses Semantic Versioning.
 
+## [0.0.4] - 2026-11-19
+
+### Added
+
+- Wisp in the Vite dev server.
+- Scramjet and controller runtime served at fixed paths and loaded before the app.
+
 ## [0.0.3] - 2026-11-18
 
 ### Added
