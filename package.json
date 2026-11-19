@@ -15,8 +15,12 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@fastify/static": "^10.1.11",
+    "@mercuryworkshop/wisp-js": "0.5.3",
+    "fastify": "^5.12.8",
     "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "react-dom": "^19.3.1",
+    "tsx": "^4.23.15"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
