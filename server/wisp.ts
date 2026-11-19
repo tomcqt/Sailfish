@@ -27,6 +27,8 @@ export function configureWisp(): void {
   wisp.options.allow_udp_streams = false;
   // Resolve DNS through public resolvers rather than the host's, so results
   // match what users expect and avoid split-horizon internal names.
+  // Credit: these DNS settings are then from DayDream X by Night Network
+  // (AGPL-3.0), index.ts and srv/vite/dev-wisp.ts.
   wisp.options.dns_method = 'resolve';
   wisp.options.dns_servers = ['1.1.1.1', '1.0.0.1'];
   wisp.options.dns_result_order = 'ipv4first';
