@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'node:url';
 import Fastify from 'fastify';
 import fastifyStatic from '@fastify/static';
-import { configureWisp, handleWispUpgrade, WISP_PATH } from './wisp';
+import { configureWisp, handleWispUpgrade, WISP_PATH } from './wisp.ts';
 
 const PORT = Number(process.env.PORT ?? 8080);
 // Default to localhost. Set HOST=0.0.0.0 in Docker or on a PaaS.
@@ -14,11 +14,11 @@ await app.register(fastifyStatic, {
   root: DIST,
   // index.html must never be cached long, or users keep an old shell that
   // points at deleted hashed assets after a deploy.
-  setHeaders(res, filePath) {
+  setHeaders(reply, filePath) {
     if (filePath.endsWith('index.html') || filePath.endsWith('sw.js')) {
-      res.setHeader('Cache-Control', 'no-cache');
+      reply.header('Cache-Control', 'no-cache');
     } else if (filePath.includes('/assets/')) {
-      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      reply.header('Cache-Control', 'public, max-age=31536000, immutable');
     }
   },
 });
