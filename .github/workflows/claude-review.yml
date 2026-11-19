@@ -2,7 +2,8 @@
 #
 # Runs ONLY when someone with write access asks for it:
 #   - comment "@claude review" on a pull request, or
-#   - add the "claude-review" label to a pull request.
+#   - add the "claude-review" label to a pull request, or
+#   - click "Re-request review" next to Claude's review in the Reviewers box.
 # It never runs automatically on open/push.
 #
 # Claude reviews for security issues, bugs and other fixes, leaves inline
@@ -22,7 +23,7 @@ on:
   issue_comment:
     types: [created]
   pull_request:
-    types: [labeled]
+    types: [labeled, review_requested]
 
 concurrency:
   group: claude-review-${{ github.event.issue.number || github.event.pull_request.number }}
@@ -35,7 +36,11 @@ jobs:
         github.event.issue.pull_request &&
         contains(github.event.comment.body, '@claude review')) ||
       (github.event_name == 'pull_request' &&
-        github.event.label.name == 'claude-review')
+        github.event.action == 'labeled' &&
+        github.event.label.name == 'claude-review') ||
+      (github.event_name == 'pull_request' &&
+        github.event.action == 'review_requested' &&
+        github.event.requested_reviewer.login == 'claude[bot]')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -78,6 +83,11 @@ jobs:
             3. Other fixes worth making: missing tests for changed behavior,
                dead code, clear simplifications. Skip pure style nits that
                Prettier/ESLint would catch.
+
+            If you have reviewed this PR before (check `gh pr view --comments`
+            for your earlier reviews), this is a re-review: check whether each
+            earlier finding was fixed, and say which are fixed and which still
+            stand. Do not repeat inline comments for issues that are fixed.
 
             Only report issues you have verified against the code. For each
             one, post an inline comment on the exact line with
