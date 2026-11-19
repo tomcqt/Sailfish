@@ -1,5 +1,5 @@
 import type { Plugin } from 'vite';
-import { configureWisp, handleWispUpgrade } from '../server/wisp';
+import { configureWisp, handleWispUpgrade } from '../server/wisp.ts';
 
 /**
  * Lets `pnpm dev` proxy sites without running the Fastify server too. Vite's
