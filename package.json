@@ -12,7 +12,9 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "start": "tsx server/index.ts",
+    "serve": "pnpm build && pnpm start"
   },
   "dependencies": {
     "@fastify/static": "^10.1.11",
