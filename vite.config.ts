@@ -14,13 +14,16 @@ export default defineConfig({
     react(),
     wispDevPlugin(),
     viteStaticCopy({
+      // v4 keeps the source's directory structure under `dest` by default
+      // (e.g. /scramjet/node_modules/.../scramjet.js). stripBase flattens each
+      // file directly into `dest`, so it is served at /scramjet/scramjet.js.
       targets: [
         { src: `${scramjetDist}/scramjet.js`, dest: 'scramjet' },
         { src: `${scramjetDist}/scramjet.wasm`, dest: 'scramjet' },
         { src: `${controllerDist}/controller.api.js`, dest: 'controller' },
         { src: `${controllerDist}/controller.sw.js`, dest: 'controller' },
         { src: `${controllerDist}/controller.inject.js`, dest: 'controller' },
-      ],
+      ].map((target) => ({ ...target, rename: { stripBase: true } })),
     }),
   ],
   define: {
