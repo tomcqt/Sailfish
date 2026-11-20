@@ -26,6 +26,7 @@ export class ProxyService {
   private controller: Controller | null = null;
   private booting: Promise<void> | null = null;
   private wispUrl: string;
+  private transport: LibcurlClient | null = null;
 
   constructor(options: ProxyOptions) {
     this.wispUrl = options.wispUrl;
@@ -65,6 +66,21 @@ export class ProxyService {
 
     await controller.wait();
     this.controller = controller;
+    this.transport = transport;
+  }
+
+  /**
+   * Releases a transport that is no longer in use. LibcurlClient has no
+   * close method of its own, so this closes its libcurl HTTP session, which
+   * aborts its pending requests and closes its pooled Wisp streams.
+   * @param transport The transport to release.
+   */
+  private disposeTransport(transport: LibcurlClient): void {
+    try {
+      transport.session?.close();
+    } catch (err) {
+      console.warn('Failed to close the previous proxy transport:', err);
+    }
   }
 
   private async createTransport(wisp: string): Promise<LibcurlClient> {
@@ -90,8 +106,12 @@ export class ProxyService {
   public async setWispUrl(url: string): Promise<void> {
     await this.init();
     const transport = await this.createTransport(url);
+    const previous = this.transport;
     this.controller!.setTransport(transport);
+    this.transport = transport;
     this.wispUrl = url;
+    // Only release the old transport once the swap has succeeded.
+    if (previous && previous !== transport) this.disposeTransport(previous);
   }
 
   /**
