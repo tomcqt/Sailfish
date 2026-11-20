@@ -89,6 +89,8 @@ export class ProxyService {
    */
   public async setWispUrl(url: string): Promise<void> {
     await this.init();
+    const transport = await this.createTransport(url);
+    this.controller!.setTransport(transport);
     this.wispUrl = url;
     this.controller!.setTransport(await this.createTransport(url));
   }
