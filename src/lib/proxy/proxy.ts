@@ -92,7 +92,6 @@ export class ProxyService {
     const transport = await this.createTransport(url);
     this.controller!.setTransport(transport);
     this.wispUrl = url;
-    this.controller!.setTransport(await this.createTransport(url));
   }
 
   /**
@@ -103,7 +102,11 @@ export class ProxyService {
    *  proxied URLs.
    */
   public decodeFrameUrl(frame: Frame, href: string): string | null {
-    const prefix = new URL(frame.prefix, location.href).href;
+    let prefix = new URL(frame.prefix, location.href).href;
+    // Verify that this.controller exists.
+    if (!this.controller) return null;
+    // Normalise having an ending slash on prefixes.
+    if (!prefix.endsWith('/')) prefix += '/';
     if (!href.startsWith(prefix)) return null;
     const encoded = href.slice(prefix.length);
     try {
