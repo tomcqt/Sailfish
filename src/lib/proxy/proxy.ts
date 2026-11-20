@@ -104,7 +104,7 @@ export class ProxyService {
   public decodeFrameUrl(frame: Frame, href: string): string | null {
     let prefix = new URL(frame.prefix, location.href).href;
     // Verify that this.controller exists.
-    if (!this.controller) return null;
+    if (!this.controller) throw Error('Controller is not properly initialised');
     // Normalise having an ending slash on prefixes.
     if (!prefix.endsWith('/')) prefix += '/';
     if (!href.startsWith(prefix)) return null;
