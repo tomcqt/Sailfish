@@ -3,6 +3,13 @@
 All notable changes to Sailfish are documented here.
 The format follows Keep a Changelog, and the project uses Semantic Versioning.
 
+## [0.0.5] - 2026-11-20
+
+### Added
+
+- Service worker that routes proxied requests.
+- ProxyService: Scramjet controller with a libcurl transport.
+
 ## [0.0.4] - 2026-11-19
 
 ### Added
