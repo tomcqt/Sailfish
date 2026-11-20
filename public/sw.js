@@ -7,6 +7,8 @@
  *
  * This file should be kept small and dependency-free. Make sure to bump
  * SW_VERSION when you change it so that the browsers pick up the new worker.
+ * This version number is tracked independently of the Sailfish version number,
+ * which is tracked in package.json.
  */
 
 const SW_VERSION = '0.1.0';
