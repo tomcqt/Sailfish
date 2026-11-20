@@ -18,6 +18,17 @@ export default defineConfig([
     ],
     languageOptions: { globals: globals.browser },
   },
+  {
+    // The service worker runs in a ServiceWorkerGlobalScope, not a window.
+    files: ['public/sw.js'],
+    languageOptions: {
+      globals: {
+        ...globals.serviceworker,
+        // Defined by controller.sw.js, loaded via importScripts()
+        $scramjetController: 'readonly',
+      },
+    },
+  },
   // Last, so it switches off formatting rules from every config above.
   eslintConfigPrettier,
 ]);
