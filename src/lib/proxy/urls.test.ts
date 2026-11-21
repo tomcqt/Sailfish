@@ -27,7 +27,7 @@ describe('normalizeInput', () => {
     expect(normalizeInput(input, SEARCH)).toBe(expected);
   });
 
-  it('keeps sailfish:// URLs as they are', () => {
+  it('keeps sail:// URLs as they are', () => {
     expect(normalizeInput('sail://settings', SEARCH)).toBe('sail://settings');
   });
 
