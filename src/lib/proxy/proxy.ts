@@ -61,12 +61,17 @@ export class ProxyService {
     if (!worker) throw new Error('Service worker did not activate.');
 
     const transport = await this.createTransport(this.wispUrl);
-    const { Controller } = getScramjetController();
-    const controller = new Controller({ serviceworker: worker, transport });
-
-    await controller.wait();
-    this.controller = controller;
-    this.transport = transport;
+    try {
+      const { Controller } = getScramjetController();
+      const controller = new Controller({ serviceworker: worker, transport });
+      await controller.wait();
+      this.controller = controller;
+      this.transport = transport;
+    } catch (err) {
+      // Don't leak the Wisp session if the controller never came up.
+      this.disposeTransport(transport);
+      throw err;
+    }
   }
 
   /**
@@ -79,7 +84,7 @@ export class ProxyService {
     try {
       transport.session?.close();
     } catch (err) {
-      console.warn('Failed to close the previous proxy transport:', err);
+      console.warn('Failed to close a proxy transport:', err);
     }
   }
 
@@ -107,7 +112,13 @@ export class ProxyService {
     await this.init();
     const transport = await this.createTransport(url);
     const previous = this.transport;
-    this.controller!.setTransport(transport);
+    try {
+      this.controller!.setTransport(transport);
+    } catch (err) {
+      // Keep the old transport live; only drop the one that failed to attach.
+      this.disposeTransport(transport);
+      throw err;
+    }
     this.transport = transport;
     this.wispUrl = url;
     // Only release the old transport once the swap has succeeded.
@@ -130,7 +141,7 @@ export class ProxyService {
     if (!href.startsWith(prefix)) return null;
     const encoded = href.slice(prefix.length);
     try {
-      return this.controller!.config.codec.decode(encoded);
+      return this.controller.config.codec.decode(encoded);
     } catch {
       return null;
     }
