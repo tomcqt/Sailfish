@@ -39,3 +39,10 @@ The format follows Keep a Changelog, and the project uses Semantic Versioning.
 - AGPL-3.0 license, README, and changelog.
 
 ## [Unreleased]
+
+### Added
+
+- Fastify server with a Wisp endpoint at /wisp/.
+- Service worker and Scramjet controller with a libcurl transport.
+- PoC page that loads sites through the proxy.
+- Input normalizing for the omnibar.

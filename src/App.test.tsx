@@ -1,12 +1,15 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+vi.mock('@/lib/proxy/proxy', () => ({
+  proxy: { createFrame: vi.fn(() => new Promise(() => {})) },
+}));
+
 import App from './App';
 
 describe('App', () => {
-  it('renders the product name', () => {
+  it('renders the address input', () => {
     render(<App />);
-    expect(
-      screen.getByRole('heading', { name: 'Sailfish' }),
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText('Address')).toBeInTheDocument();
   });
 });
