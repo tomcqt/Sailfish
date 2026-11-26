@@ -10,8 +10,9 @@ const LOCALHOST = /^localhost(:\d{1,5})?(\/\S*)?$/i;
 /**
  * Converts what the user typed into a URL to load.
  *
- * - Anything that has a scheme is kept, and is parsed and reserialised when it
- *   is http or https so that "http://a.com" becomes "http://a.com/".
+ * - http and https URLs are parsed and reserialised so that "http://a.com"
+ *   becomes "http://a.com/". sail:// URLs are kept as they are. Any other
+ *   scheme (javascript://, file://, ...) is treated as a search.
  * - Bare domains automatically have https added to them and localhost and IPs
  *   have http.
  * - Everything else becomes a search query using `searchTemplate`, where %s is
@@ -30,15 +31,19 @@ export function normalizeInput(raw: string, searchTemplate: string): string {
       } catch {
         // Fall through to search.
       }
-    } else {
+    } else if (/^sail:\/\//i.test(input)) {
       return input;
     }
   }
 
   if (!/\s/.test(input)) {
-    if (LOCALHOST.test(input) || IPV4.test(input))
-      return new URL(`http://${input}`).href;
-    if (DOMAIN.test(input)) return new URL(`https://${input}`).href;
+    try {
+      if (LOCALHOST.test(input) || IPV4.test(input))
+        return new URL(`http://${input}`).href;
+      if (DOMAIN.test(input)) return new URL(`https://${input}`).href;
+    } catch {
+      // Invalid host or port: fall through to search.
+    }
   }
 
   return searchTemplate.replace('%s', encodeURIComponent(input));

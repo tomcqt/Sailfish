@@ -23,6 +23,19 @@ describe('normalizeInput', () => {
     ],
     ['sailfish', 'https://duckduckgo.com/?q=sailfish'],
     ['what is 1+1?', 'https://duckduckgo.com/?q=what%20is%201%2B1%3F'],
+    ['999.1.1.1', 'https://duckduckgo.com/?q=999.1.1.1'],
+    ['1.2.3.4:99999', 'https://duckduckgo.com/?q=1.2.3.4%3A99999'],
+    ['localhost:99999', 'https://duckduckgo.com/?q=localhost%3A99999'],
+    ['example.com:70000', 'https://duckduckgo.com/?q=example.com%3A70000'],
+    [
+      'javascript://%0aalert(1)',
+      'https://duckduckgo.com/?q=javascript%3A%2F%2F%250aalert(1)',
+    ],
+    [
+      'file:///etc/passwd',
+      'https://duckduckgo.com/?q=file%3A%2F%2F%2Fetc%2Fpasswd',
+    ],
+    ['ftp://example.com', 'https://duckduckgo.com/?q=ftp%3A%2F%2Fexample.com'],
   ])('treats %s as a search', (input, expected) => {
     expect(normalizeInput(input, SEARCH)).toBe(expected);
   });

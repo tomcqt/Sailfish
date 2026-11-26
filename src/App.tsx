@@ -5,6 +5,23 @@ import type { Frame } from '@/lib/proxy/scramjet';
 
 const SEARCH = 'https://duckduckgo.com/?q=%s';
 
+/**
+ * Frame has no teardown method, so create at most one per iframe. StrictMode
+ * runs effects twice in dev; the second run reuses the first promise.
+ */
+const frames = new WeakMap<HTMLIFrameElement, Promise<Frame>>();
+
+function frameFor(iframe: HTMLIFrameElement): Promise<Frame> {
+  let frame = frames.get(iframe);
+  if (!frame) {
+    frame = proxy.createFrame(iframe);
+    // Let a later mount retry if setup failed.
+    frame.catch(() => frames.delete(iframe));
+    frames.set(iframe, frame);
+  }
+  return frame;
+}
+
 export default function App() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const frameRef = useRef<Frame | null>(null);
@@ -13,14 +30,16 @@ export default function App() {
 
   useEffect(() => {
     let cancelled = false;
-    proxy
-      .createFrame(iframeRef.current!)
+    frameFor(iframeRef.current!)
       .then((frame) => {
         if (cancelled) return;
         frameRef.current = frame;
         setStatus('ready');
       })
-      .catch((err: unknown) => setStatus(`proxy failed: ${String(err)}`));
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        setStatus(`proxy failed: ${String(err)}`);
+      });
     return () => {
       cancelled = true;
     };
